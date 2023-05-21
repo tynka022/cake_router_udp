@@ -1,0 +1,35 @@
+The Cake Router
+
+Zasada działania:
+
+W sieci TOR wyróżniamy trzy rodzaje urządzeń:
+- klienta,
+- węzły pośredniczące,
+- węzeł końcowy.
+W sieci tej zaszyfrowane pakiety danych od klienta przesyłane są do serwera przechodząc przez węzły pośredniczące i węzeł końcowy. Każdy węzeł pośredniczący oraz węzeł końcowy posiada swój klucz, który odszyfrowuje część danych. Z odszyfrowanej części węzeł dowiaduje się do kogo musi przesłać dalej dane. Węzły pośredniczące nie znają jednak pełnej trasy przesyłu danych, jedynie wiedzą jaki był adres poprzedniego węzła oraz do jakiego węzła mają przesłać dane dalej. Jedynie węzeł końcowy zna adres odbiorcy, jednak nie posiada informacji o nadawcy (kliencie). W ten sposób namierzenie adresu nadawcy jest utrudnione.
+
+W naszym projekcie ograniczymy się do 2 węzłów pośredniczących i jednego węzła końcowego. Dodatkowo pomijamy szyfrowanie danych. Schemat działania naszej sieci wygląda zetem następująco:
+Klient łączy się do jednego z węzłów pośredniczących (na przykład W1) i wysyła pakiet danych, w pakiecie przesyłana jest informacja o adresie kolejnego węzła (W2), oraz paczka danych którą powinien wysłać do W2, W2 otrzymuje pakiet który przekazuje do węzła końcowego WK. Węzeł WK wysyła pakiet do serwera. Na koniec serwer wysyła z powrotem wiadomość do węzła WK. Pakiet danych wraca do klienta tą samą drogą co został wysłany dzięki temu, że każdy węzeł sieci pamięta, od kogo otrzymał pakiet danych.
+
+Klient -> W1 -> W2 -> WK -> Serwer
+Klient <- W1 <- W2 <- WK <- Serwer
+
+Użyty protokół do realizacji projektu: UDP
+
+Czynności klienta:
+- przyjmuje na wejściu listę adresów węzłów pośredniczących, adres serwera odbiorcy i wiadomość,
+- na podstawie listy serwerów wybiera trasę przez węzły pośredniczące i węzeł końcowy,
+- wysyła pakiet danych do pierwszego węzła z listy, w pakiecie znajduje się lista adresów węzłów, adres odbiorcy i wiadomość,
+- oczekuje informacji zwrotnej od pierwszego węzła sieci.
+
+Czynności serwera:
+Czynności serwera możemy podzielić na dwa rodzaje:
+- zadania serwera odbiorcy:
+	- odbiera wiadomość od węzła końcowego,
+	- przesyła do niego dane ze zwrotną wiadomością,
+- zadania serwera pełniącego funkcję węzła pośredniczącego/końcowego:
+	- odbiera dane od poprzedniego węzła (jeśli jest pierwszym węzłem, to odbiera dane od klienta),
+	- wysyła dane do kolejnego węzła zgodnie z listą przekazaną przez klienta,
+	- jako węzeł końcowy przesyła pakiet danych do serwera,
+	- zapiamiętuje, od kogo otrzymał wiadomość przy przesyłaniu danych w kierunku klient->serwer.
+Dodatkowo sieć musi obsługiwać dwóch równolegle działających klientów.
