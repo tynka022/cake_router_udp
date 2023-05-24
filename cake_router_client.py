@@ -16,22 +16,29 @@ else:
 
 inp = input("Wpisz wiadomosc do przeslania:\n")
 
-# ustawianie portu do nasluchu
-localPort = 20001
+# port do wysylania
+sendingPort = 20001
+# port do nasluchu
+recvingPort = 20002
 # rozmiar bufora
 bufferSize = 1024
 
-# tworzenie gniazda
-UDPClientSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+# tworzenie gniazda do wysylania
+UDPClientSocketSend = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+# tworzenie gniazda do nasluchu
+UDPClientSocketRecv = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+UDPClientSocketRecv.bind(('',recvingPort))
 # wysylanie wiadomosci do serwera
 random.shuffle(nodesIPs) # wybor drogi przesylu danych pomiedzy wezlami
 nodesIPs.append(serverIP) # dopisanie serwera docelowego na koncu listy
 firstNodeIP = nodesIPs[0] # adres pierwszego wezla sieci
-message_to_server = ' '.join(nodesIPs) # zapisane ip wezlow w kolejnosci
+nodes = ' '.join(nodesIPs) # zapisane ip wezlow w kolejnosci
 connetcion_code = random.randint(0,255)
-message_to_server = message_to_server + ';' + str(connetcion_code) + ';' + inp # dopisanie wiadomosci
-UDPClientSocket.sendto(message_to_server.encode('utf-8'), (firstNodeIP,localPort)) # wyslanie pakietu danych do pierwszego wezla sieci
-# nasluchiwanie i oczekiwanie na odpowiedz z serwera
+# pakiet danych przesylany jest w postaci: <czy wezel jest pierwszym wezlem posredniczacym>;[lista adresow ip wezlow];<kod polaczenia>;wiadomosc
+message_to_server = '1;' + nodes + ';' + str(connetcion_code) + ';' + inp # dopisanie wiadomosci
+UDPClientSocketSend.sendto(message_to_server.encode('utf-8'), (firstNodeIP,sendingPort)) # wyslanie pakietu danych do pierwszego wezla sieci
+UDPClientSocketSend.close()
+# nasluchiwanie i oczekiwanie na odpowiedz z serwera, nasluchiwanie nastepuje na innym porcie
 print("Oczekiwanie na odpowiedz z serwera...")
-message, address = UDPClientSocket.recvfrom(bufferSize)
+message, address = UDPClientSocketRecv.recvfrom(bufferSize)
 print("Odebrano wiadomosc od ", address, ": ", message.decode('utf-8'))
