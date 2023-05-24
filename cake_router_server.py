@@ -55,6 +55,7 @@ while True:
         # Opcja 1 - wysylanie wiadomosci od klienta do serwera
         else:
             print('Wiadomosc do serwera: ', message)
+            print(nodesIPs)
             nextNodeIP = nodesIPs[1] # nastepny wezel
             # jesli nie znaleziono takiego polaczenia, dodaj go do listy neighbours i przeslij wiadomosc do kolejnego wezla
             isFirst = int(message.split(';')[0])
