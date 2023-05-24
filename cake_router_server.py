@@ -38,7 +38,7 @@ while True:
         # Opcja 2 - wysylanie z serwera do klienta
         if (address[0],connection_code) in [(t[1],t[2]) for t in neighbours]:
             print('Wiadomosc zwrotna: ', message)
-            for i in neighbours:
+            for i in range(len(neighbours)):
                 if address[0] == neighbours[i][1] and connection_code == neighbours[i][2]:
                     toRemove = i
                     previousNodeIP = neighbours[i][0]
