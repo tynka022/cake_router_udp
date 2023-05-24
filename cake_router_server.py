@@ -19,7 +19,7 @@ while True:
     message, address = UDPServerSocket.recvfrom(bufferSize)
     message = message.decode('utf-8')
     print('Polaczenie z ', address)
-    print('Wiadomosc: ', message)
+    #print('Wiadomosc: ', message)
     #UDPServerSocket.sendto('Odebrano wiadomosc'.encode('utf-8'),address)
 
     nodesIPs = message.split(';')[1].split() # lista wezlow przeslana w pakiecie
@@ -28,16 +28,16 @@ while True:
     if len(nodesIPs) == 1:
         # jesli jest tylko jeden adres, znaczy to ze jest to adres serwera, czyli wiadomosc zostala dostarczona
         message = '0;;' + message.split(';',2)[2] # usuniecie adresu ip serwera z listy
-        print('Otrzymano wiadomosc: ', message.split(';')[3])
+        print('Otrzymano wiadomosc:\n ', message.split(';')[3])
         previousNodeIP = address[0]
         UDPServerSocket.sendto(message.encode('utf-8'),(previousNodeIP,serverPort))
     else:
         connection_code = int(message.split(';')[2]) # kod polaczenia
-        nextNodeIP = nodesIPs[1] # nastepny wezel
         print(nodesIPs)
         # sa dwie opcje, 1. pakiet wysylany jest do serwera, 2. -//- do klienta
         # Opcja 2 - wysylanie z serwera do klienta
         if (address[0],connection_code) in [(t[1],t[2]) for t in neighbours]:
+            print('Wiadomosc zwrotna: ', message)
             for i in neighbours:
                 if address[0] == neighbours[i][1] and connection_code == neighbours[i][2]:
                     toRemove = i
@@ -54,6 +54,8 @@ while True:
                 print('Wiadomosc posrednia do serwera: ' + message)
         # Opcja 1 - wysylanie wiadomosci od klienta do serwera
         else:
+            print('Wiadomosc do serwera: ', message)
+            nextNodeIP = nodesIPs[1] # nastepny wezel
             # jesli nie znaleziono takiego polaczenia, dodaj go do listy neighbours i przeslij wiadomosc do kolejnego wezla
             isFirst = int(message.split(';')[0])
             # usun pierwszy wskaznik okreslajacy, czy wezel jest pierwszy
@@ -65,5 +67,5 @@ while True:
             # wyslij wiadomosc do nastepnego wezla
             message = '0;' + message
             UDPServerSocket.sendto(message.encode('utf-8'),(nextNodeIP,serverPort))
-            print('Wiadomosc posrednia do klienta: ' + message)
+            print('Wiadomosc posrednia zwrotna: ' + message)
 # koniec petli while
