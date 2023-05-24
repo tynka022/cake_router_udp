@@ -63,6 +63,7 @@ while True:
             # dodaj informacje o polaczeniu do listy neighbours
             neighbours.append((address[0],nextNodeIP,connection_code,isFirst))
             # wyslij wiadomosc do nastepnego wezla
+            message = '0;' + message
             UDPServerSocket.sendto(message.encode('utf-8'),(nextNodeIP,serverPort))
             print('Wiadomosc posrednia do klienta: ' + message)
 # koniec petli while
