@@ -1,3 +1,8 @@
+# Autorrzy projektu
+# Konrad Marciniak
+# Martyna Toborek
+# Maciej Standerski
+
 import socket
 import socketserver
 import threading
