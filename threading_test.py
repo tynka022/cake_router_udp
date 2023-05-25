@@ -1,5 +1,5 @@
 import socket
-import threading
+import socketserver
 
 # Ustawianie portu do nasłuchu
 serverPort = 20001
@@ -7,26 +7,19 @@ clientPort = 20002
 # Rozmiar bufora
 bufferSize = 1024
 
-
-
 # Tworzenie gniazda UDP
-UDPServerSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-UDPServerSocket.bind(('',serverPort))
 
-neighbours = [] # lista przechowujaca wezly "sasiadujace" z tym serwerem w danym polaczeniu, kod polaczenia i informacje, czy obecny serwer jest pierwszym wezlem w polaczeniu
-# przechowuje ona tuple, ktorej postac wyglada nastepujaco:
-# (ip poprzedniego wezla, ip kolejnego wezla, kod polaczenia, czy wezel poczatkowy [0=nie,1=tak])
-
-def start():
-    thread = threading.Thread(target=handle)
-    thread.start()
-
-def handle():
-    #while block begin
-    while True:
-        message, address = UDPServerSocket.recvfrom(bufferSize)
+class MyUDPHandler(socketserver.BaseRequestHandler):
+    
+    neighbours = [] # lista przechowujaca wezly "sasiadujace" z tym serwerem w danym polaczeniu, kod polaczenia i informacje, czy obecny serwer jest pierwszym wezlem w polaczeniu
+    def handle(self):
+        message = self.request[0].strip()
+        socket = self.request[1]
+        #print("{} wrote:".format(self.client_address[0]))
+        #print(data)
+        
         message = message.decode('utf-8')
-        print('Polaczenie z ', address)
+        print('Polaczenie z ', self.client_address[0])
         #print('Wiadomosc: ', message)
         #UDPServerSocket.sendto('Odebrano wiadomosc'.encode('utf-8'),address)
 
@@ -45,7 +38,7 @@ def handle():
             # sa dwie opcje, 1. pakiet wysylany jest do serwera, 2. -//- do klienta
             # Opcja 2 - wysylanie z serwera do klienta
             if (address[0],connection_code) in [(t[1],t[2]) for t in neighbours]:
-#               print('Wiadomosc zwrotna: ', message)
+                print('Wiadomosc zwrotna: ', message)
                 for i in range(len(neighbours)):
                     if address[0] == neighbours[i][1] and connection_code == neighbours[i][2]:
                         toRemove = i
@@ -59,11 +52,11 @@ def handle():
                     # jeslie wezel nie jest pierwszy, przeslij pakiet do kolejnego wezla
                     neighbours.pop(toRemove)
                     UDPServerSocket.sendto(message.encode('utf-8'),(previousNodeIP,serverPort))
-#                    print('Wiadomosc posrednia do serwera: ' + message)
+                    print('Wiadomosc posrednia do serwera: ' + message)
             # Opcja 1 - wysylanie wiadomosci od klienta do serwera
             else:
-#                print('Wiadomosc do serwera: ', message)
-#                print(nodesIPs)
+                print('Wiadomosc do serwera: ', message)
+                print(nodesIPs)
                 nextNodeIP = nodesIPs[1] # nastepny wezel
                 # jesli nie znaleziono takiego polaczenia, dodaj go do listy neighbours i przeslij wiadomosc do kolejnego wezla
                 isFirst = int(message.split(';')[0])
@@ -75,8 +68,17 @@ def handle():
                 neighbours.append((address[0],nextNodeIP,connection_code,isFirst))
                 # wyslij wiadomosc do nastepnego wezla
                 message = '0;' + message
-                UDPServerSocket.sendto(message.encode('utf-8'),(nextNodeIP,serverPort))
-                # print('Wiadomosc posrednia zwrotna: ' + message)
-    # koniec petli while
+                socket.sendto(message.encode('utf-8'),(nextNodeIP,serverPort))
+                print('Wiadomosc posrednia zwrotna: ' + message)
 
-start()
+
+# przechowuje ona tuple, ktorej postac wyglada nastepujaco:
+# (ip poprzedniego wezla, ip kolejnego wezla, kod polaczenia, czy wezel poczatkowy [0=nie,1=tak])
+
+#while block begin
+
+# koniec petli while
+
+if __name__ == "__main__":
+    with socketserver.UDPServer(('', serverPort), MyUDPHandler) as server:
+        server.serve_forever()
