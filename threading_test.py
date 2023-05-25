@@ -83,7 +83,7 @@ class MyUDPHandler(socketserver.BaseRequestHandler):
 
 # koniec petli while
 
-class ThreadedUDPServer(SocketServer.ThreadingMixIn, SocketServer.UDPServer):
+class ThreadedUDPServer(socketserver.ThreadingMixIn, socketserver.UDPServer):
     pass
 
 if __name__ == "__main__":
