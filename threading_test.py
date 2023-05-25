@@ -1,5 +1,7 @@
 import socket
 import socketserver
+import threading
+import time
 
 # Ustawianie portu do nasłuchu
 serverPort = 20001
@@ -16,6 +18,7 @@ class MyUDPHandler(socketserver.BaseRequestHandler):
     
         message = self.request[0].strip()
         socket = self.request[1]
+        current_thread = threading.current_thread()
         #print("{} wrote:".format(self.client_address[0]))
         #print(data)
         
@@ -80,6 +83,23 @@ class MyUDPHandler(socketserver.BaseRequestHandler):
 
 # koniec petli while
 
+class ThreadedUDPServer(SocketServer.ThreadingMixIn, SocketServer.UDPServer):
+    pass
+
 if __name__ == "__main__":
-    with socketserver.UDPServer(('', serverPort), MyUDPHandler) as server:
-        server.serve_forever()
+    #with socketserver.UDPServer(('', serverPort), MyUDPHandler) as server:
+     #   server.serve_forever()A
+
+    server = ThreadedUDPServer(('', serverPort), MyUDPHandler)
+
+    server_thread = threading.Thread(target=server.serve_forever)
+    server_thread.daemon = True
+
+    try:
+        server_thread.start()
+        #print("Server started at {} port {}".format(HOST, PORT))
+        #while True: time.sleep(100)
+    except (KeyboardInterrupt, SystemExit):
+        server.shutdown()
+        server.server_close()
+        exit()
