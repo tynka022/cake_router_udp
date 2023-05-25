@@ -21,7 +21,7 @@ class MyUDPHandler(socketserver.BaseRequestHandler):
         message = message.decode('utf-8')
         print('Polaczenie z ', self.client_address[0])
         #print('Wiadomosc: ', message)
-        #UDPServerSocket.sendto('Odebrano wiadomosc'.encode('utf-8'),address)
+        #socket.sendto('Odebrano wiadomosc'.encode('utf-8'),address)
 
         nodesIPs = message.split(';')[1].split() # lista wezlow przeslana w pakiecie
         # pierwszy split oddziela adresy IP wezlow od wiadomosci
@@ -30,42 +30,42 @@ class MyUDPHandler(socketserver.BaseRequestHandler):
             # jesli jest tylko jeden adres, znaczy to ze jest to adres serwera, czyli wiadomosc zostala dostarczona
             message = '0;;' + message.split(';',2)[2] # usuniecie adresu ip serwera z listy
             print('Otrzymano wiadomosc:\n ', message.split(';')[3])
-            previousNodeIP = address[0]
-            UDPServerSocket.sendto(message.encode('utf-8'),(previousNodeIP,serverPort))
+            previousNodeIP = self.client_address[0]
+            socket.sendto(message.encode('utf-8'),(previousNodeIP,serverPort))
         else:
             connection_code = int(message.split(';')[2]) # kod polaczenia
             print(nodesIPs)
             # sa dwie opcje, 1. pakiet wysylany jest do serwera, 2. -//- do klienta
             # Opcja 2 - wysylanie z serwera do klienta
-            if (address[0],connection_code) in [(t[1],t[2]) for t in neighbours]:
+            if (self.client_address[0],connection_code) in [(t[1],t[2]) for t in self.neighbours]:
                 print('Wiadomosc zwrotna: ', message)
-                for i in range(len(neighbours)):
-                    if address[0] == neighbours[i][1] and connection_code == neighbours[i][2]:
+                for i in range(len(self.neighbours)):
+                    if self.client_address[0] == self.neighbours[i][1] and connection_code == self.neighbours[i][2]:
                         toRemove = i
-                        previousNodeIP = neighbours[i][0]
+                        previousNodeIP = self.neighbours[i][0]
                         break
-                if neighbours[toRemove][3] == 1:
+                if self.neighbours[toRemove][3] == 1:
                     # jesli wezel jest piwerwszym wezlem sieci, to wyslij do klienta przez clientPort
-                    neighbours.pop(toRemove) # usun sasiadow z pamieci
-                    UDPServerSocket.sendto(message.encode('utf-8'),(previousNodeIP,clientPort))
+                    self.neighbours.pop(toRemove) # usun sasiadow z pamieci
+                    socket.sendto(message.encode('utf-8'),(previousNodeIP,clientPort))
                 else:
                     # jeslie wezel nie jest pierwszy, przeslij pakiet do kolejnego wezla
-                    neighbours.pop(toRemove)
-                    UDPServerSocket.sendto(message.encode('utf-8'),(previousNodeIP,serverPort))
+                    self.neighbours.pop(toRemove)
+                    socket.sendto(message.encode('utf-8'),(previousNodeIP,serverPort))
                     print('Wiadomosc posrednia do serwera: ' + message)
             # Opcja 1 - wysylanie wiadomosci od klienta do serwera
             else:
                 print('Wiadomosc do serwera: ', message)
                 print(nodesIPs)
                 nextNodeIP = nodesIPs[1] # nastepny wezel
-                # jesli nie znaleziono takiego polaczenia, dodaj go do listy neighbours i przeslij wiadomosc do kolejnego wezla
+                # jesli nie znaleziono takiego polaczenia, dodaj go do listy self.neighbours i przeslij wiadomosc do kolejnego wezla
                 isFirst = int(message.split(';')[0])
                 # usun pierwszy wskaznik okreslajacy, czy wezel jest pierwszy
                 message = message.split(';',1)[1] # rozwiazanie z https://www.geeksforgeeks.org/python-removing-initial-word-from-string/
                 # usun pierwszy adres ip wezla na liscie, jest to wezel obecnego serwera
                 message = message.split(' ',1)[1]
-                # dodaj informacje o polaczeniu do listy neighbours
-                neighbours.append((address[0],nextNodeIP,connection_code,isFirst))
+                # dodaj informacje o polaczeniu do listy self.neighbours
+                self.neighbours.append((self.client_address[0],nextNodeIP,connection_code,isFirst))
                 # wyslij wiadomosc do nastepnego wezla
                 message = '0;' + message
                 socket.sendto(message.encode('utf-8'),(nextNodeIP,serverPort))
