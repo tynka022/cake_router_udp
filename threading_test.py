@@ -11,8 +11,9 @@ bufferSize = 1024
 
 class MyUDPHandler(socketserver.BaseRequestHandler):
     
-    neighbours = [] # lista przechowujaca wezly "sasiadujace" z tym serwerem w danym polaczeniu, kod polaczenia i informacje, czy obecny serwer jest pierwszym wezlem w polaczeniu
     def handle(self):
+        self.neighbours = [] # lista przechowujaca wezly "sasiadujace" z tym serwerem w danym polaczeniu, kod polaczenia i informacje, czy obecny serwer jest pierwszym wezlem w polaczeniu
+    
         message = self.request[0].strip()
         socket = self.request[1]
         #print("{} wrote:".format(self.client_address[0]))
