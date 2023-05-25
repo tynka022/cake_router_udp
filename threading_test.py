@@ -35,11 +35,11 @@ class MyUDPHandler(socketserver.BaseRequestHandler):
             socket.sendto(message.encode('utf-8'),(previousNodeIP,serverPort))
         else:
             connection_code = int(message.split(';')[2]) # kod polaczenia
-            print(nodesIPs)
+            #print(nodesIPs)
             # sa dwie opcje, 1. pakiet wysylany jest do serwera, 2. -//- do klienta
             # Opcja 2 - wysylanie z serwera do klienta
             if (self.client_address[0],connection_code) in [(t[1],t[2]) for t in self.neighbours]:
-                print('Wiadomosc zwrotna: ', message)
+                #print('Wiadomosc zwrotna: ', message)
                 for i in range(len(self.neighbours)):
                     if self.client_address[0] == self.neighbours[i][1] and connection_code == self.neighbours[i][2]:
                         toRemove = i
@@ -53,11 +53,11 @@ class MyUDPHandler(socketserver.BaseRequestHandler):
                     # jeslie wezel nie jest pierwszy, przeslij pakiet do kolejnego wezla
                     self.neighbours.pop(toRemove)
                     socket.sendto(message.encode('utf-8'),(previousNodeIP,serverPort))
-                    print('Wiadomosc posrednia do serwera: ' + message)
+                    #print('Wiadomosc posrednia do serwera: ' + message)
             # Opcja 1 - wysylanie wiadomosci od klienta do serwera
             else:
-                print('Wiadomosc do serwera: ', message)
-                print(nodesIPs)
+                #print('Wiadomosc do serwera: ', message)
+                #print(nodesIPs)
                 nextNodeIP = nodesIPs[1] # nastepny wezel
                 # jesli nie znaleziono takiego polaczenia, dodaj go do listy self.neighbours i przeslij wiadomosc do kolejnego wezla
                 isFirst = int(message.split(';')[0])
@@ -70,7 +70,7 @@ class MyUDPHandler(socketserver.BaseRequestHandler):
                 # wyslij wiadomosc do nastepnego wezla
                 message = '0;' + message
                 socket.sendto(message.encode('utf-8'),(nextNodeIP,serverPort))
-                print('Wiadomosc posrednia zwrotna: ' + message)
+                #print('Wiadomosc posrednia zwrotna: ' + message)
 
 
 # przechowuje ona tuple, ktorej postac wyglada nastepujaco:
