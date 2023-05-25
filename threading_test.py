@@ -21,7 +21,7 @@ class MyUDPHandler(socketserver.BaseRequestHandler):
         current_thread = threading.current_thread()
         #print("{} wrote:".format(self.client_address[0]))
         #print(data)
-        
+        print("thread: {}, client: {}".format(current_thread.name, self.client_address)) 
         message = message.decode('utf-8')
         print('Polaczenie z ', self.client_address[0])
         #print('Wiadomosc: ', message)
