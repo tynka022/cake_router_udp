@@ -1,5 +1,9 @@
+# Autorrzy projektu
+# Konrad Marciniak
+# Martyna Toborek
+# Maciej Standerski
+
 import socket
-import sys
 import random
 
 nodesIPs = [] # lista adresow posredniczacych
@@ -57,4 +61,4 @@ UDPClientSocketSend.close()
 # nasluchiwanie i oczekiwanie na odpowiedz z serwera, nasluchiwanie nastepuje na innym porcie
 print("Oczekiwanie na odpowiedz z serwera...")
 message, address = UDPClientSocketRecv.recvfrom(bufferSize)
-print("Odebrano wiadomosc od ", address, ": ", message.decode('utf-8'))
+print("Odebrano wiadomosc od ", address, ": ", message.decode('utf-8').split(';')[3])
