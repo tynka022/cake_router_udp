@@ -1,16 +1,19 @@
 cake_router_client:
 
 Program cake_router_client wysyła wpisaną przez użytkownika wiadomość do wskazanego przez niego odbiorcy przez konkretną linie pośredników. Aby tak się stało należy przed włączeniem programu uzupełninć plik konfiguracyjny cake_router.conf i wpisać numeru IP otwartych serwerów pośredniczących - ostatni wpisany adres IP to odbiorca końcowy. 
-Porgram cake_router_client uruchamiamy w następujący sposób z terminala:
+By uruchomić program klienta, należy przejść do folderu /execs. Porgram cake_router_client uruchamiamy w następujący sposób z terminala:
 ./cake_router_client
+Po uruchomieniu program porposi o podanie wiadomości do przesłania. Wpisujemy wiadomość i wciskamy ENTER. Program będzie oczekiwał odpowiedzi zwrotnej od serwera odbiorcy końcowego.
 
 cake_router_server:
 
 Progam cake_router_server jest związany z programem cake_router_client w sposób: 
 - gdy klient wpisze IP komputera, na którym jest odpalony program cake_router_server jako odbiorce to otrzymuje wiadomość. 
 - gdy klient wpisze  IP komputera, na którym jest odpalony program cake_router_server jako pośrednika to otrzymuje i przekazuje dalej wiadomość od klienta. 
-Progam cake_router_server uruchamiamy w następujący sposób z terminala:
+Aby uruchomić serwer, należy przejść do folderu /execs. Progam cake_router_server uruchamiamy w następujący sposób z terminala:
 ./cake_router_server
+Serwer pracuje w tle. Gdy serwer jest serwerem odbiorcy docelowego, na ekranie wyświetli się wiadomość od nadawcy, która została dostarczona przez węzły pośredniczące.
+Aby wyłączyć serwer, należy wcisnąć kombinację klawiszy Ctrl+c.
 
 Wymagania komputera:
 system: GNU/Linux 
