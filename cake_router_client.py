@@ -15,17 +15,17 @@ for line in f:
     if line.find('#') == -1: # jesli linijka nie jest komentarzem, to...
         line = line.split('\n')[0] # usun z linijki znak przejscia do nastepnej linijki '\n'
         if len(line.split()) > 1: # jesli w linijce jest wiecej niz jeden wyraz, przerwij program
-            print(f"W pliku " + file_name + f" w linijce {l_nr} musi się znajdować dokladnie jeden adres.")
+            print("W pliku " + file_name + " w linijce "+ln_r+" musi się znajdować dokladnie jeden adres.")
             exit()
         if len(line.split()) == 0: # jesli linijka jest pusta, przejdz do nastepnej linii
             continue
         # jesli w linii nie ma wyrazu w postaci IP xxx.xxx.xxx.xxx, gdzie xxx to liczba calkowita z przedzialu [0,255], to przerwij program
         if any(c.isalpha() for c in line) or line.count('.') != 3:
-            print(f"W pliku " + file_name + f" w linijce {l_nr} nie ma podanego adresu IP")
+            print("W pliku " + file_name + " w linijce " + l_nr + " nie ma podanego adresu IP")
             exit()
         for nr in line.split('.'):
             if int(nr) > 255: # sprawdzanie, czy liczby w adresie IP sa z zakresu [0,255]
-                print(f"W pliku " + file_name + f" w linijce {l_nr} nie ma podanego adresu IP")
+                print("W pliku " + file_name + " w linijce " + l_nr + " nie ma podanego adresu IP")
                 exit()
         nodesIPs.append(line)
     l_nr += 1
