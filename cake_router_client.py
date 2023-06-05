@@ -5,6 +5,7 @@
 
 import socket
 import random
+import sys
 
 nodesIPs = [] # lista adresow posredniczacych
 # Wczytywanie adresow IP serwerow z pliku konfiguracyjnego
@@ -16,17 +17,17 @@ for line in f:
         line = line.split('\n')[0] # usun z linijki znak przejscia do nastepnej linijki '\n'
         if len(line.split()) > 1: # jesli w linijce jest wiecej niz jeden wyraz, przerwij program
             print("W pliku " + file_name + " w linijce "+ str(l_nr) + " musi się znajdować dokladnie jeden adres.")
-            exit()
+            sys.exit(1)
         if len(line.split()) == 0: # jesli linijka jest pusta, przejdz do nastepnej linii
             continue
         # jesli w linii nie ma wyrazu w postaci IP xxx.xxx.xxx.xxx, gdzie xxx to liczba calkowita z przedzialu [0,255], to przerwij program
         if any(c.isalpha() for c in line) or line.count('.') != 3:
             print("W pliku " + file_name + " w linijce " + str(l_nr) + " nie ma podanego adresu IP")
-            exit()
+            sys.exit(1)
         for nr in line.split('.'):
             if int(nr) > 255: # sprawdzanie, czy liczby w adresie IP sa z zakresu [0,255]
                 print("W pliku " + file_name + " w linijce " + str(l_nr) + " nie ma podanego adresu IP")
-                exit()
+                sys.exit(1)
         nodesIPs.append(line)
     l_nr += 1
 # sprawdzenie, czy zostaly wczytane przynajmniej 3 adresy IP
