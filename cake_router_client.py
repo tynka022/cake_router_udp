@@ -15,7 +15,7 @@ for line in f:
     if line.find('#') == -1: # jesli linijka nie jest komentarzem, to...
         line = line.split('\n')[0] # usun z linijki znak przejscia do nastepnej linijki '\n'
         if len(line.split()) > 1: # jesli w linijce jest wiecej niz jeden wyraz, przerwij program
-            print("W pliku " + file_name + " w linijce "+ln_r+" musi się znajdować dokladnie jeden adres.")
+            print("W pliku " + file_name + " w linijce "+ l_nr + " musi się znajdować dokladnie jeden adres.")
             exit()
         if len(line.split()) == 0: # jesli linijka jest pusta, przejdz do nastepnej linii
             continue
