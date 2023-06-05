@@ -13,6 +13,6 @@ Progam cake_router_server uruchamiamy w następujący sposób z terminala:
 ./cake_router_server
 
 Wymagania komputera:
-system: Linux 
+system: GNU/Linux 
 środowisko: python3
 biblioteki: glibc
