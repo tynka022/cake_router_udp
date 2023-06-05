@@ -11,25 +11,23 @@ nodesIPs = [] # lista adresow posredniczacych
 # Wczytywanie adresow IP serwerow z pliku konfiguracyjnego
 file_name = "cake_router.conf" # nazwa pliku konfiguracyjnego
 f = open(file_name,"r") # obiekt przchowujacy plik konfiguracyjny do odczytu
-l_nr = 1 # numer linijki w pliku konfiguracyjnym
 for line in f:
     if line.find('#') == -1: # jesli linijka nie jest komentarzem, to...
         line = line.split('\n')[0] # usun z linijki znak przejscia do nastepnej linijki '\n'
         if len(line.split()) > 1: # jesli w linijce jest wiecej niz jeden wyraz, przerwij program
-            print("W pliku " + file_name + " w linijce "+ str(l_nr) + " musi się znajdować dokladnie jeden adres.")
+            print("Błąd! W pliku " + file_name + " w jednej linijce musi się znajdować dokladnie jeden adres.")
             sys.exit(1)
         if len(line.split()) == 0: # jesli linijka jest pusta, przejdz do nastepnej linii
             continue
         # jesli w linii nie ma wyrazu w postaci IP xxx.xxx.xxx.xxx, gdzie xxx to liczba calkowita z przedzialu [0,255], to przerwij program
         if any(c.isalpha() for c in line) or line.count('.') != 3:
-            print("W pliku " + file_name + " w linijce " + str(l_nr) + " nie ma podanego adresu IP")
+            print("Błąd! W pliku " + file_name + " znajduje się linijka, w ktorej adres IP zostal podany w zlej postaci.")
             sys.exit(1)
         for nr in line.split('.'):
             if int(nr) > 255: # sprawdzanie, czy liczby w adresie IP sa z zakresu [0,255]
-                print("W pliku " + file_name + " w linijce " + str(l_nr) + " nie ma podanego adresu IP")
+                print("Błąd! W pliku " + file_name + " znajduje sie adres ze zla wartoscia.")
                 sys.exit(1)
         nodesIPs.append(line)
-    l_nr += 1
 # sprawdzenie, czy zostaly wczytane przynajmniej 3 adresy IP
 if len(nodesIPs) < 3:
     print("W pliku " + file_name + " jest za malo adresow IP. Wymagane przynajmniej 3 adresy.")
